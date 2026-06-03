@@ -7,7 +7,7 @@ for index, row in data.iterrows():
     name = row["Name"]
     gender = row["Gender"]
     # Load certificate image
-    image = Image.open("templates/certificate.png")
+    image = Image.open("uploads/certificate.png")
     # Create drawing object
     draw = ImageDraw.Draw(image)
     # Load font
