@@ -1,7 +1,9 @@
 from PIL import Image, ImageDraw, ImageFont
 import pandas as pd
+import os
+os.makedirs("outputs", exist_ok=True)
 # Load Excel file
-data = pd.read_excel("students.xlsx")
+data = pd.read_excel("uploads/Students.xlsx")
 # Loop through each row
 for index, row in data.iterrows():
     name = row["Name"]

@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import os
+import subprocess
 
 app = Flask(__name__)
 
@@ -19,7 +20,9 @@ def upload():
     certificate.save(os.path.join(UPLOAD_FOLDER, certificate.filename))
     excel.save(os.path.join(UPLOAD_FOLDER, excel.filename))
 
-    return "Files uploaded successfully!"
+    subprocess.run(["python", "generate.py"])
+
+    return "Certificates generated successfully!"
 
 if __name__ == "__main__":
     app.run(debug=True)
