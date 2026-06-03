@@ -7,7 +7,7 @@ for index, row in data.iterrows():
     name = row["Name"]
     gender = row["Gender"]
     # Load certificate image
-    image = Image.open("certificate.png")
+    image = Image.open("templates/certificate.png")
     # Create drawing object
     draw = ImageDraw.Draw(image)
     # Load font
@@ -38,7 +38,7 @@ for index, row in data.iterrows():
     # ---------------------------
     # SAVE (unique file for each)
     # ---------------------------
-    filename = name.replace(" ", "_") + ".png"
+    filename = "outputs/" + name.replace(" ", "_") + ".png"
     image.save(filename)
     print(f"Generated: {filename}")
 print("✅ ALL CERTIFICATES GENERATED!")
