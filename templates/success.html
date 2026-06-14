@@ -5,54 +5,86 @@
 
     <title>Success</title>
 
+    <style>
+
+        body{
+
+            font-family:Arial;
+            background:#eef2f7;
+            text-align:center;
+            margin-top:120px;
+
+        }
+
+        .box{
+
+            background:white;
+            width:500px;
+            margin:auto;
+            padding:30px;
+            border-radius:12px;
+            box-shadow:0px 0px 15px lightgray;
+
+        }
+
+        button{
+
+            padding:12px 25px;
+            font-size:18px;
+            margin:10px;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+
+        }
+
+        .download{
+
+            background:#16a34a;
+            color:white;
+
+        }
+
+        .again{
+
+            background:#2563eb;
+            color:white;
+
+        }
+
+    </style>
+
 </head>
 
-<body style="
-font-family:Arial;
-text-align:center;
-background:#f4f6f9;
-margin-top:120px;">
+<body>
 
-    <h1>
-        ✅ Certificates Generated Successfully!
-    </h1>
+<div class="box">
 
-    <h3>
-        Your certificates have been generated successfully.
-    </h3>
+<h1>✅ Certificates Generated Successfully!</h1>
 
-    <br>
+<h3>Your certificates are ready.</h3>
 
-    <a href="/download">
-        <button style="
-        padding:12px 25px;
-        font-size:18px;
-        background:#2563eb;
-        color:white;
-        border:none;
-        border-radius:8px;
-        cursor:pointer;
-        margin-right:15px;">
+<a href="/download">
 
-        📥 Download Certificates
+<button class="download">
 
-        </button>
-    </a>
+📥 Download ZIP
 
-    <a href="/">
-        <button style="
-        padding:12px 25px;
-        font-size:18px;
-        background:green;
-        color:white;
-        border:none;
-        border-radius:8px;
-        cursor:pointer;">
+</button>
 
-        🔄 Generate Again
+</a>
 
-        </button>
-    </a>
+<a href="/">
+
+<button class="again">
+
+🔄 Generate Again
+
+</button>
+
+</a>
+
+</div>
 
 </body>
 
