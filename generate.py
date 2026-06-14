@@ -1,6 +1,10 @@
 from PIL import Image, ImageDraw, ImageFont
 import pandas as pd
 import os
+with open("settings.txt", "r") as f:
+    fontsize = int(f.readline())
+    x = int(f.readline())
+    y = int(f.readline())
 os.makedirs("outputs", exist_ok=True)
 # Load Excel file
 data = pd.read_excel("uploads/Students.xlsx")
@@ -13,12 +17,11 @@ for index, row in data.iterrows():
     # Create drawing object
     draw = ImageDraw.Draw(image)
     # Load font
-    font = ImageFont.truetype("fonts/TIMES.TTF", 45)
-    # ---------------------------
-    # NAME POSITION (ONLY NAME)
-    # ---------------------------
-    x = 1030
-    y = 535
+    font = ImageFont.truetype(
+    "fonts/TIMES.TTF",
+    fontsize
+)
+    
     draw.text((x, y), name, fill="black", font=font)
     # ---------------------------
     # STRIKE LOGIC

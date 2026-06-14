@@ -31,11 +31,22 @@ def upload():
     certificate = request.files["certificate"]
     excel = request.files["excel"]
 
-    # Save files inside uploads folder
+    # Get settings from form
+    fontsize = request.form["fontsize"]
+    x = request.form["x"]
+    y = request.form["y"]
+
+    # Save settings
+    with open("settings.txt", "w") as f:
+        f.write(f"{fontsize}\n")
+        f.write(f"{x}\n")
+        f.write(f"{y}\n")
+
+    # Save uploaded files
     certificate.save(os.path.join(UPLOAD_FOLDER, "certificate.png"))
     excel.save(os.path.join(UPLOAD_FOLDER, "Students.xlsx"))
 
-    # Run certificate generation script
+    # Run certificate generation
     subprocess.run(["python", "generate.py"])
 
     return render_template("success.html")
