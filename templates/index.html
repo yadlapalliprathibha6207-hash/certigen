@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-
 <html>
 
 <head>
 
-<title>CertiGen</title>
+    <title>CertiGen</title>
 
-<link rel="stylesheet"
-href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
@@ -15,76 +14,61 @@ href="{{ url_for('static', filename='style.css') }}">
 
 <div class="container">
 
-<h1>🎓 CertiGen</h1>
+    <h1>🎓 CertiGen</h1>
 
-<h3>Automated Certificate Generation System</h3>
+    <h3>Automated Certificate Generation System</h3>
 
-<form action="/upload"
-method="POST"
-enctype="multipart/form-data">
+    <form action="/upload"
+    method="POST"
+    enctype="multipart/form-data">
 
-<label>
+        <label>
 
-Upload Certificate Template
+            Upload Certificate Template
 
-</label>
+        </label>
 
-<input
-type="file"
-name="certificate"
-required>
+        <input
+        type="file"
+        name="certificate"
+        required>
 
-<label>
+        <label>
 
-Upload Excel File
+            Upload Excel File
 
-</label>
+        </label>
 
-<input
-type="file"
-name="excel"
-required>
+        <input
+        type="file"
+        name="excel"
+        required>
 
-<label>
+        <br><br>
 
-Font Size
+        <center>
 
-</label>
+        <a href="/editor" target="_blank">
 
-<input
-type="number"
-name="fontsize"
-value="45">
+            <button type="button">
 
-<label>
+                🖱 Configure Layout
 
-X Position
+            </button>
 
-</label>
+        </a>
 
-<input
-type="number"
-name="x"
-value="1030">
+        </center>
 
-<label>
+        <br>
 
-Y Position
+        <button type="submit">
 
-</label>
+            🚀 Generate Certificates
 
-<input
-type="number"
-name="y"
-value="535">
+        </button>
 
-<button type="submit">
-
-🚀 Generate Certificates
-
-</button>
-
-</form>
+    </form>
 
 </div>
 
