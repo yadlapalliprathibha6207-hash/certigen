@@ -1,77 +1,31 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CertiGen</title>
-
-    <link rel="stylesheet"
-    href="{{ url_for('static', filename='style.css') }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
+    <div class="container">
+        <div class="hero">
+            <h1>🎓 CertiGen</h1>
+            <p>Professional certificate template designer and bulk generator.</p>
+        </div>
 
-<div class="container">
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <label>Upload Certificate Template</label>
+            <input type="file" name="certificate" required>
 
-    <h1>🎓 CertiGen</h1>
+            <label>Upload Excel File</label>
+            <input type="file" name="excel" required>
 
-    <h3>Automated Certificate Generation System</h3>
+            <a href="/designer" target="_blank">
+                <button type="button">🖱 Open Designer</button>
+            </a>
 
-    <form action="/upload"
-    method="POST"
-    enctype="multipart/form-data">
-
-        <label>
-
-            Upload Certificate Template
-
-        </label>
-
-        <input
-        type="file"
-        name="certificate"
-        required>
-
-        <label>
-
-            Upload Excel File
-
-        </label>
-
-        <input
-        type="file"
-        name="excel"
-        required>
-
-        <br><br>
-
-        <center>
-
-        <a href="/editor" target="_blank">
-
-            <button type="button">
-
-                🖱 Configure Layout
-
-            </button>
-
-        </a>
-
-        </center>
-
-        <br>
-
-        <button type="submit">
-
-            🚀 Generate Certificates
-
-        </button>
-
-    </form>
-
-</div>
-
+            <button type="submit">🚀 Generate Certificates</button>
+        </form>
+    </div>
 </body>
-
 </html>

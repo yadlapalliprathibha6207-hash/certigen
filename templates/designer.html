@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CertiGen Designer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="designer-shell">
+        <aside class="sidebar">
+            <h2>Designer</h2>
+            <button id="addFieldBtn">+ Add Field</button>
+            <button id="saveLayoutBtn">💾 Save Layout</button>
+            <label class="toggle-row">
+                <input type="checkbox" id="genderToggle" checked>
+                <span>Enable Gender Prefixes</span>
+            </label>
+            <div class="field-list" id="fieldList"></div>
+        </aside>
+
+        <main class="designer-main">
+            <div class="canvas-card">
+                <div class="canvas-toolbar">
+                    <strong>Certificate Preview</strong>
+                    <span>Drag fields to reposition them</span>
+                </div>
+                <div id="canvas" class="canvas-area">
+                    {% if template_image %}
+                    <img id="templateImage" src="{{ template_image }}" alt="Template preview">
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+
+        <aside class="properties-panel">
+            <h3>Field Properties</h3>
+            <div id="propertyPanel">
+                <p>Select a field to edit its style.</p>
+            </div>
+        </aside>
+    </div>
+
+    <script src="{{ url_for('static', filename='designer.js') }}"></script>
+</body>
+</html>

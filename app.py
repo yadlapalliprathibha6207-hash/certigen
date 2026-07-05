@@ -1,96 +1,116 @@
-from flask import Flask, render_template, request, send_file, jsonify
+from flask import Flask, render_template, request, send_file, jsonify, url_for, send_from_directory
 import os
-from flask import send_from_directory
-import subprocess
 import shutil
+import json
+import subprocess
+import sys
+from pathlib import Path
 
-# Create Flask application
 app = Flask(__name__)
 
-# Folder where uploaded files will be stored
-UPLOAD_FOLDER = "uploads"
+BASE_DIR = Path(__file__).resolve().parent
+UPLOAD_FOLDER = BASE_DIR / "uploads"
+OUTPUT_FOLDER = BASE_DIR / "outputs"
+LAYOUT_FILE = BASE_DIR / "layout.json"
+SETTINGS_FILE = BASE_DIR / "settings.txt"
 
-# Create uploads folder if it doesn't exist
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+UPLOAD_FOLDER.mkdir(exist_ok=True)
+OUTPUT_FOLDER.mkdir(exist_ok=True)
 
 
-# ----------------------------
-# Home Page
-# ----------------------------
+def ensure_layout_file():
+    if not LAYOUT_FILE.exists():
+        default_layout = {
+            "fields": [
+                {
+                    "id": "field-name",
+                    "name": "Name",
+                    "x": 460,
+                    "y": 320,
+                    "fontSize": 42,
+                    "fontFamily": "Times New Roman",
+                    "color": "#000000",
+                    "bold": False,
+                    "italic": False,
+                    "align": "center"
+                }
+            ],
+            "genderLogic": True
+        }
+        with LAYOUT_FILE.open("w", encoding="utf-8") as handle:
+            json.dump(default_layout, handle, indent=2)
+
+
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
-# ----------------------------
-# Upload and Generate
-# ----------------------------
 @app.route("/upload", methods=["POST"])
 def upload():
+    certificate = request.files.get("certificate")
+    excel = request.files.get("excel")
 
-    # Get uploaded files
-    certificate = request.files["certificate"]
-    excel = request.files["excel"]
+    if not certificate or not excel:
+        return "Please upload both a certificate template and an Excel file.", 400
 
-    # Save uploaded files
-    certificate.save(os.path.join(UPLOAD_FOLDER, "certificate.png"))
-    excel.save(os.path.join(UPLOAD_FOLDER, "Students.xlsx"))
+    certificate.save(UPLOAD_FOLDER / "certificate.png")
+    excel.save(UPLOAD_FOLDER / "Students.xlsx")
 
-    # If settings.txt does not exist, create default values
-    if not os.path.exists("settings.txt"):
-        with open("settings.txt", "w") as f:
-            f.write("45\n")
-            f.write("1030\n")
-            f.write("535\n")
+    ensure_layout_file()
 
-    # Run certificate generation
-    subprocess.run(["python", "generate.py"])
+    if not SETTINGS_FILE.exists():
+        SETTINGS_FILE.write_text("True\n", encoding="utf-8")
 
-    return render_template("success.html")
+    subprocess.run([sys.executable, str(BASE_DIR / "generate.py")], check=False)
+
+    output_count = len(list(OUTPUT_FOLDER.glob("*.png")))
+    return render_template("success.html", output_count=output_count)
+
+
+@app.route("/designer")
+def designer():
+    ensure_layout_file()
+    template_image = ""
+    if (UPLOAD_FOLDER / "certificate.png").exists():
+        template_image = url_for("uploaded_file", filename="certificate.png")
+    return render_template("designer.html", template_image=template_image)
+
+
+@app.route("/get_layout")
+def get_layout():
+    ensure_layout_file()
+    with LAYOUT_FILE.open("r", encoding="utf-8") as handle:
+        return jsonify(json.load(handle))
+
+
+@app.route("/save_layout", methods=["POST"])
+def save_layout():
+    payload = request.get_json(silent=True) or {}
+    layout = {
+        "fields": payload.get("fields", []),
+        "genderLogic": payload.get("genderLogic", True)
+    }
+    with LAYOUT_FILE.open("w", encoding="utf-8") as handle:
+        json.dump(layout, handle, indent=2)
+    return jsonify({"message": "Layout saved successfully."})
+
 
 @app.route("/download")
 def download():
-
-    zip_path = "certificates"
-
-    shutil.make_archive(zip_path, "zip", "outputs")
-
+    archive_path = BASE_DIR / "certificates"
+    shutil.make_archive(str(archive_path), "zip", OUTPUT_FOLDER)
     return send_file(
-        "certificates.zip",
-        as_attachment=True
+        BASE_DIR / "certificates.zip",
+        as_attachment=True,
+        download_name="certificates.zip"
     )
 
-@app.route("/editor")
-def editor():
 
-    return render_template("editor.html")
-
-@app.route("/save_position", methods=["POST"])
-def save_position():
-
-    data = request.get_json()
-
-    x = data["x"]
-    y = data["y"]
-
-    # Save coordinates
-    with open("settings.txt", "w") as f:
-        f.write("45\n")
-        f.write(str(x) + "\n")
-        f.write(str(y) + "\n")
-
-    return "✅ Layout Saved Successfully!"
-
-@app.route("/test")
-def test():
-    return "TEST ROUTE WORKING"
-
-@app.route("/uploads/<filename>")
+@app.route("/uploads/<path:filename>")
 def uploaded_file(filename):
-    return send_from_directory("uploads", filename)
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
-# ----------------------------
-# Run Application
-# ----------------------------
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5000)

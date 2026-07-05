@@ -1,0 +1,25 @@
+{
+  "fields": [
+    {
+      "name": "Honye",
+      "size": 45,
+      "x": 1030,
+      "y": 535,
+      "fontSize": 25,
+      "fontFamily": "Times New Roman"
+    },
+    {
+      "id": "field-1783236179609",
+      "name": "Demux",
+      "x": 627,
+      "y": 324,
+      "fontSize": 26,
+      "fontFamily": "Times New Roman",
+      "color": "#000000",
+      "bold": false,
+      "italic": false,
+      "align": "center"
+    }
+  ],
+  "genderLogic": true
+}

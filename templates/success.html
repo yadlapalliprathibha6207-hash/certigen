@@ -1,91 +1,17 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-
-    <title>Success</title>
-
-    <style>
-
-        body{
-
-            font-family:Arial;
-            background:#eef2f7;
-            text-align:center;
-            margin-top:120px;
-
-        }
-
-        .box{
-
-            background:white;
-            width:500px;
-            margin:auto;
-            padding:30px;
-            border-radius:12px;
-            box-shadow:0px 0px 15px lightgray;
-
-        }
-
-        button{
-
-            padding:12px 25px;
-            font-size:18px;
-            margin:10px;
-            border:none;
-            border-radius:8px;
-            cursor:pointer;
-
-        }
-
-        .download{
-
-            background:#16a34a;
-            color:white;
-
-        }
-
-        .again{
-
-            background:#2563eb;
-            color:white;
-
-        }
-
-    </style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificates Generated</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
-
-<div class="box">
-
-<h1>✅ Certificates Generated Successfully!</h1>
-
-<h3>Your certificates are ready.</h3>
-
-<a href="/download">
-
-<button class="download">
-
-📥 Download ZIP
-
-</button>
-
-</a>
-
-<a href="/">
-
-<button class="again">
-
-🔄 Generate Again
-
-</button>
-
-</a>
-
-</div>
-
+    <div class="success-card">
+        <h1>✅ Certificates Generated</h1>
+        <p>{{ output_count }} certificates were created successfully.</p>
+        <p><a href="/download">Download certificates.zip</a></p>
+        <p><a href="/">Back to home</a></p>
+    </div>
 </body>
-
 </html>
