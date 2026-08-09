@@ -4,7 +4,9 @@ import shutil
 import json
 import subprocess
 import sys
+import time
 from pathlib import Path
+from generate import generate_certificates
 
 app = Flask(__name__)
 
@@ -31,7 +33,7 @@ def ensure_layout_file():
                     "fontFamily": "Times New Roman",
                     "color": "#000000",
                     "bold": False,
-                    "italic": False,
+                    "italic": True,
                     "align": "center"
                 }
             ],
@@ -39,6 +41,32 @@ def ensure_layout_file():
         }
         with LAYOUT_FILE.open("w", encoding="utf-8") as handle:
             json.dump(default_layout, handle, indent=2)
+
+
+def normalize_layout(layout):
+    now = int(time.time() * 1000)
+    normalized_fields = []
+    for index, field in enumerate(layout.get("fields", []) if isinstance(layout, dict) else []):
+        field_data = dict(field or {})
+        if not field_data.get("id"):
+            field_data["id"] = f"field-{now}-{index}"
+        if "fontSize" not in field_data and "size" in field_data:
+            field_data["fontSize"] = field_data["size"]
+        field_data["fontSize"] = int(field_data.get("fontSize", field_data.get("size", 42)) or 42)
+        field_data.pop("size", None)
+        field_data["x"] = int(field_data.get("x", 0) or 0)
+        field_data["y"] = int(field_data.get("y", 0) or 0)
+        field_data["name"] = str(field_data.get("name", "Field"))
+        field_data["fontFamily"] = str(field_data.get("fontFamily", "Times New Roman"))
+        field_data["color"] = str(field_data.get("color", "#000000"))
+        field_data["bold"] = bool(field_data.get("bold", False))
+        field_data["italic"] = bool(field_data.get("italic", False))
+        field_data["align"] = str(field_data.get("align", "center"))
+        normalized_fields.append(field_data)
+    return {
+        "fields": normalized_fields,
+        "genderLogic": bool(layout.get("genderLogic", True)) if isinstance(layout, dict) else True
+    }
 
 
 @app.route("/")
@@ -81,7 +109,9 @@ def designer():
 def get_layout():
     ensure_layout_file()
     with LAYOUT_FILE.open("r", encoding="utf-8") as handle:
-        return jsonify(json.load(handle))
+        layout = json.load(handle)
+    normalized = normalize_layout(layout)
+    return jsonify(normalized)
 
 
 @app.route("/save_layout", methods=["POST"])
@@ -91,9 +121,23 @@ def save_layout():
         "fields": payload.get("fields", []),
         "genderLogic": payload.get("genderLogic", True)
     }
+    normalized = normalize_layout(layout)
     with LAYOUT_FILE.open("w", encoding="utf-8") as handle:
-        json.dump(layout, handle, indent=2)
+        json.dump(normalized, handle, indent=2)
     return jsonify({"message": "Layout saved successfully."})
+
+
+@app.route("/generate")
+def generate():
+    try:
+        generate_certificates()
+        return render_template("success.html")
+    except Exception as e:
+        return f"""
+        <h2>❌ Certificate generation failed</h2>
+        <p>{str(e)}</p>
+        <a href=\"/designer\">← Back to Designer</a>
+        """
 
 
 @app.route("/download")

@@ -18,13 +18,38 @@ OUTPUT_FOLDER.mkdir(exist_ok=True)
 FONTS_FOLDER.mkdir(exist_ok=True)
 
 
+def normalize_layout(layout):
+    if not isinstance(layout, dict):
+        return {"fields": [], "genderLogic": True}
+
+    normalized_fields = []
+    for field in layout.get("fields", []):
+        field_data = dict(field or {})
+        field_data["fontSize"] = int(field_data.get("fontSize", field_data.get("size", 42)) or 42)
+        field_data.pop("size", None)
+        field_data["x"] = int(field_data.get("x", 0) or 0)
+        field_data["y"] = int(field_data.get("y", 0) or 0)
+        field_data["name"] = str(field_data.get("name", ""))
+        field_data["fontFamily"] = str(field_data.get("fontFamily", "Times New Roman"))
+        field_data["color"] = str(field_data.get("color", "#000000"))
+        field_data["align"] = str(field_data.get("align", "center"))
+        field_data["bold"] = bool(field_data.get("bold", False))
+        field_data["italic"] = bool(field_data.get("italic", False))
+        normalized_fields.append(field_data)
+
+    return {
+        "fields": normalized_fields,
+        "genderLogic": bool(layout.get("genderLogic", True))
+    }
+
+
 def load_layout(layout_path=None, base_dir=None):
     base_dir = Path(base_dir or BASE_DIR)
     layout_path = Path(layout_path or base_dir / "layout.json")
     if not layout_path.exists():
         return {"fields": [], "genderLogic": True}
     with layout_path.open("r", encoding="utf-8") as handle:
-        return json.load(handle)
+        return normalize_layout(json.load(handle))
 
 
 def get_font_path(font_family, base_dir=None):
@@ -69,8 +94,14 @@ def create_font(font_family, font_size, base_dir=None):
 
 
 def sanitize_filename(value):
-    cleaned = "".join(ch if ch.isalnum() or ch in "-_" else "_" for ch in str(value))
-    return cleaned.strip("_") or "student"
+    if value is None:
+        cleaned = ""
+    else:
+        cleaned = "".join(ch if ch.isalnum() or ch in "-_" else "_" for ch in str(value))
+    cleaned = cleaned.strip("_")
+    if not cleaned or cleaned.lower() in {"nan", "none"}:
+        return "student"
+    return cleaned
 
 
 def draw_field(draw, field, value, image_width, image_height):
@@ -99,6 +130,8 @@ def draw_field(draw, field, value, image_width, image_height):
     y = int(field.get("y", 0))
 
     if align == "center":
+        if field.get("name", "").strip().lower() == "name":
+            x = image_width // 2
         x = x - (text_width // 2)
     elif align == "right":
         x = x - text_width
@@ -125,6 +158,9 @@ def apply_gender_prefix(row, field_name, gender_logic):
 
 def generate_certificates(layout_path=None):
     OUTPUT_FOLDER.mkdir(exist_ok=True)
+    for file_path in OUTPUT_FOLDER.glob("*.png"):
+        file_path.unlink()
+
     layout = load_layout(layout_path=layout_path)
     fields = layout.get("fields", [])
     gender_logic = bool(layout.get("genderLogic", True))
@@ -159,12 +195,15 @@ def generate_certificates(layout_path=None):
 
             draw_field(draw, field, value, image_width, image_height)
 
-        student_name = sanitize_filename(row.get("Name") if "Name" in row else index)
+        raw_name = row.get("Name", "")
+        if pd.isna(raw_name):
+            raw_name = ""
+        student_name = sanitize_filename(raw_name or index)
         output_path = OUTPUT_FOLDER / f"{student_name}_{index + 1}.png"
         certificate.save(output_path)
         print(f"Generated: {output_path}")
 
-    print("✅ ALL CERTIFICATES GENERATED!")
+    print(f"✅ ALL CERTIFICATES GENERATED! Total: {len(list(OUTPUT_FOLDER.glob('*.png')))}")
 
 
 if __name__ == "__main__":
