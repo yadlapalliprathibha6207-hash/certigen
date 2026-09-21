@@ -7,11 +7,25 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="success-card">
-        <h1>✅ Certificates Generated</h1>
-        <p>{{ output_count }} certificates were created successfully.</p>
-        <p><a href="/download">Download certificates.zip</a></p>
-        <p><a href="/">Back to home</a></p>
-    </div>
+<div class="success-card">
+    <h1>🎉 Certificates Generated!</h1>
+    <p>
+        Your certificates have been successfully generated.
+    </p>
+    <p>
+        They are ready to download as a ZIP file.
+    </p>
+    <br>
+    <a href="/download">
+        <button>
+            📦 Download Certificates ZIP
+        </button>
+    </a>
+    <a href="/designer">
+        <button>
+            ✏️ Back to Designer
+        </button>
+    </a>
+</div>
 </body>
 </html>

@@ -8,6 +8,24 @@ const propertyPanel = document.getElementById('propertyPanel');
 const genderToggle = document.getElementById('genderToggle');
 const addFieldBtn = document.getElementById('addFieldBtn');
 const saveLayoutBtn = document.getElementById('saveLayoutBtn');
+const generateBtn = document.getElementById('generateBtn');
+const templateImage = document.getElementById('templateImage');
+
+function getImageScale() {
+    if (!templateImage || !templateImage.naturalWidth) {
+        return 1;
+    }
+    return templateImage.clientWidth / templateImage.naturalWidth;
+}
+
+function scaledValue(value) {
+    return Math.round(value * getImageScale());
+}
+
+function unscaleValue(value) {
+    const scale = getImageScale();
+    return scale === 0 ? value : Math.round(value / scale);
+}
 
 function createField(name = 'New Field') {
     return {
@@ -43,9 +61,9 @@ function renderFields() {
         el.className = `canvas-field ${field.id === activeFieldId ? 'active' : ''}`;
         el.dataset.fieldId = field.id;
         el.textContent = field.name;
-        el.style.left = `${field.x}px`;
-        el.style.top = `${field.y}px`;
-        el.style.fontSize = `${field.fontSize}px`;
+        el.style.left = `${scaledValue(field.x)}px`;
+        el.style.top = `${scaledValue(field.y)}px`;
+        el.style.fontSize = `${scaledValue(field.fontSize)}px`;
         el.style.fontFamily = field.fontFamily;
         el.style.color = field.color;
         el.style.fontWeight = field.bold ? 'bold' : 'normal';
@@ -163,7 +181,8 @@ function onMouseMove(event) {
     if (!dragState) return;
     const deltaX = event.clientX - dragState.startX;
     const deltaY = event.clientY - dragState.startY;
-    updateField(dragState.fieldId, { x: dragState.originX + deltaX, y: dragState.originY + deltaY });
+    const scale = getImageScale();
+    updateField(dragState.fieldId, { x: dragState.originX + Math.round(deltaX / scale), y: dragState.originY + Math.round(deltaY / scale) });
 }
 
 function stopDrag() {
@@ -198,8 +217,27 @@ genderToggle.addEventListener('change', () => {
     saveLayout();
 });
 
+generateBtn.addEventListener('click', async () => {
+    await fetch('/save_layout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            fields: fields,
+            genderLogic: genderToggle.checked
+        })
+    });
+
+    window.location.href = '/generate';
+});
+
 window.addEventListener('mousemove', onMouseMove);
 window.addEventListener('mouseup', stopDrag);
+window.addEventListener('resize', () => renderFields());
+if (templateImage) {
+    templateImage.addEventListener('load', () => renderFields());
+}
 
 fetch('/get_layout')
     .then((response) => response.json())

@@ -1,33 +1,16 @@
 {
   "fields": [
     {
-      "fontFamily": "Times New Roman",
-      "fontSize": 22,
-      "name": "Honey",
-      "size": 45,
-      "x": 454,
-      "y": 213
-    },
-    {
       "align": "center",
       "bold": false,
       "color": "#000000",
       "fontFamily": "Times New Roman",
-      "fontSize": 20,
-      "id": "field-1783236179609",
-      "italic": false,
-      "name": "Demux",
-      "x": 449,
-      "y": 239
-    },
-    {
-      "fontFamily": "Times New Roman",
-      "fontSize": 25,
-      "name": "Honey Copy",
-      "size": 45,
-      "x": 1050,
-      "y": 555,
-      "id": "field-1785480766568"
+      "fontSize": 54,
+      "id": "field-1786254613834-0",
+      "italic": true,
+      "name": "Name",
+      "x": 687,
+      "y": 462
     }
   ],
   "genderLogic": true

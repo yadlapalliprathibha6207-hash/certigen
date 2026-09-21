@@ -83,14 +83,31 @@ def upload():
         return "Please upload both a certificate template and an Excel file.", 400
 
     certificate.save(UPLOAD_FOLDER / "certificate.png")
-    excel.save(UPLOAD_FOLDER / "Students.xlsx")
+    
+    # Clean up old Excel files to ensure only the current one is used
+    for old_excel in UPLOAD_FOLDER.glob("*.xlsx"):
+        try:
+            old_excel.unlink()
+        except Exception:
+            pass  # File might be locked, that's okay
+    for old_excel in UPLOAD_FOLDER.glob("*.xls"):
+        try:
+            old_excel.unlink()
+        except Exception:
+            pass  # File might be locked, that's okay
+    
+    # Save the Excel file with its original name
+    excel_filename = excel.filename
+    excel_path = UPLOAD_FOLDER / excel_filename
+    excel.save(excel_path)
 
     ensure_layout_file()
 
     if not SETTINGS_FILE.exists():
         SETTINGS_FILE.write_text("True\n", encoding="utf-8")
 
-    subprocess.run([sys.executable, str(BASE_DIR / "generate.py")], check=False)
+    # Pass the Excel filename to generate.py
+    subprocess.run([sys.executable, str(BASE_DIR / "generate.py"), excel_filename], check=False)
 
     output_count = len(list(OUTPUT_FOLDER.glob("*.png")))
     return render_template("success.html", output_count=output_count)

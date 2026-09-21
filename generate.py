@@ -11,7 +11,6 @@ UPLOAD_FOLDER = BASE_DIR / "uploads"
 OUTPUT_FOLDER = BASE_DIR / "outputs"
 FONTS_FOLDER = BASE_DIR / "fonts"
 LAYOUT_FILE = BASE_DIR / "layout.json"
-EXCEL_FILE = UPLOAD_FOLDER / "Students.xlsx"
 TEMPLATE_FILE = UPLOAD_FOLDER / "certificate.png"
 
 OUTPUT_FOLDER.mkdir(exist_ok=True)
@@ -156,7 +155,7 @@ def apply_gender_prefix(row, field_name, gender_logic):
     return None
 
 
-def generate_certificates(layout_path=None):
+def generate_certificates(layout_path=None, excel_filename=None):
     OUTPUT_FOLDER.mkdir(exist_ok=True)
     for file_path in OUTPUT_FOLDER.glob("*.png"):
         file_path.unlink()
@@ -167,10 +166,24 @@ def generate_certificates(layout_path=None):
 
     if not TEMPLATE_FILE.exists():
         raise FileNotFoundError("Certificate template not found.")
-    if not EXCEL_FILE.exists():
-        raise FileNotFoundError("Excel file not found.")
+    
+    # Find Excel file
+    if excel_filename:
+        excel_file = UPLOAD_FOLDER / excel_filename
+        print(f"Using specified Excel file: {excel_file}")
+    else:
+        # Try to find any Excel file in the uploads folder
+        excel_files = list(UPLOAD_FOLDER.glob("*.xlsx")) + list(UPLOAD_FOLDER.glob("*.xls"))
+        if excel_files:
+            excel_file = excel_files[0]
+            print(f"Found Excel file: {excel_file}")
+        else:
+            raise FileNotFoundError("No Excel file found in uploads folder.")
+    
+    if not excel_file.exists():
+        raise FileNotFoundError(f"Excel file not found: {excel_file}")
 
-    dataframe = pd.read_excel(EXCEL_FILE)
+    dataframe = pd.read_excel(excel_file)
     image = Image.open(TEMPLATE_FILE)
     image_width, image_height = image.size
 
@@ -207,4 +220,6 @@ def generate_certificates(layout_path=None):
 
 
 if __name__ == "__main__":
-    generate_certificates()
+    import sys
+    excel_filename = sys.argv[1] if len(sys.argv) > 1 else None
+    generate_certificates(excel_filename=excel_filename)

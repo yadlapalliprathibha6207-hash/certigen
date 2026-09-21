@@ -179,3 +179,20 @@ button:hover {
     text-decoration: none;
     font-weight: 600;
 }
+
+.generate-btn {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.generate-btn:hover {
+    background: linear-gradient(135deg, #15803d, #166534);
+}
