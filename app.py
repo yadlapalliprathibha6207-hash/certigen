@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, send_file, jsonify, url_for, send_from_directory
-import os
 import shutil
 import json
 import subprocess

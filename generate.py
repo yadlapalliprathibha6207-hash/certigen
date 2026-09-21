@@ -1,5 +1,4 @@
 import json
-import os
 from pathlib import Path
 
 import pandas as pd
@@ -113,13 +112,6 @@ def draw_field(draw, field, value, image_width, image_height):
 
     font = create_font(font_family, font_size, BASE_DIR)
     text = str(value if value is not None else "")
-
-    if bold and italic:
-        font = create_font(font_family, font_size, BASE_DIR)
-    elif bold:
-        font = create_font(font_family, font_size, BASE_DIR)
-    elif italic:
-        font = create_font(font_family, font_size, BASE_DIR)
 
     bbox = draw.textbbox((0, 0), text, font=font)
     text_width = bbox[2] - bbox[0]
